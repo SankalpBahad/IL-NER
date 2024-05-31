@@ -13,12 +13,12 @@ This dataset is licensed under Creative Commons Attribution 4.0 (CC-BY-4.0) lice
 
 To use this dataset, cite the paper as
 
-@misc{bahad2024finetuning,
-      title={Fine-tuning Pre-trained Named Entity Recognition Models For Indian Languages}, 
-      author={Sankalp Bahad and Pruthwik Mishra and Karunesh Arora and Rakesh Chandra Balabantaray and Dipti Misra Sharma and Parameswari Krishnamurthy},
-      year={2024},
-      eprint={2405.04829},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
-}
+      @misc{bahad2024finetuning,
+            title={Fine-tuning Pre-trained Named Entity Recognition Models For Indian Languages}, 
+            author={Sankalp Bahad and Pruthwik Mishra and Karunesh Arora and Rakesh Chandra Balabantaray and Dipti Misra Sharma and Parameswari Krishnamurthy},
+            year={2024},
+            eprint={2405.04829},
+            archivePrefix={arXiv},
+            primaryClass={cs.CL}
+      }
 
