@@ -124,18 +124,6 @@ def tokenize_text_into_sentences_and_words(text, lang_type=0):
                         sentences[index + 1] = ''
     return proper_sentences
 
-
-# def main():
-#     """Pass arguments and call functions here."""
-#     # text = "2 जग पानी से 1 भगौना भरता है । 2 भगोने पानी से 1 बाल्टी भरती है । तो बाल्टी को भरने में कितने जग पानी की आवश्यकता होगी ?"
-#     text = "रेशमा के पास 19 गुब्बारे थे और 7 गुब्बारे फूट गए अब उसके पास कितने गुब्बारे बचे?"
-#     sentences = tokenize_text_into_sentences_and_words(text)
-#     print(sentences)
-
-
-# if __name__ == '__main__':
-#     main()
-
 def predict_labels_for_sentences(model, tokenizer, sentences):
     predicted_true_labels_for_all_sents = []
     with torch.no_grad():
@@ -162,13 +150,13 @@ def predict_labels_for_sentences(model, tokenizer, sentences):
     return predicted_true_labels_for_all_sents
 
 # # Use a pipeline as a high-level helper
-# pipe = pipeline("token-classification", model="Sankalp-Bahad/hindi-model")
+# pipe = pipeline("token-classification", model="Model_Name")
 
 # Load model directly
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 
-tokenizer = AutoTokenizer.from_pretrained("Sankalp-Bahad/Monolingual-Hindi-NER-Model")
-model = AutoModelForTokenClassification.from_pretrained("Sankalp-Bahad/Monolingual-Hindi-NER-Model")
+tokenizer = AutoTokenizer.from_pretrained("Model_Name")
+model = AutoModelForTokenClassification.from_pretrained("Model_Name")
 
 label_list = ['B-NEL','B-NEO','B-NEP','I-NEL','I-NEO','I-NEP','O','B-NETI','I-NETI','B-NEN','I-NEN','B-NEAR','I-NEAR']
 label_to_id = {label_list[i] : i for i in range(len(label_list))}
@@ -179,23 +167,12 @@ parser.add_argument('--output', dest='out', help='Enter the output file')
 args = parser.parse_args()
 print(args.file)
 file_name=args.file
-# dataset=convert_conll_to_dataset(test_file_name)
 with open(file_name,"r") as inp_file:
     text=inp_file.read()
 sentences = tokenize_text_into_sentences_and_words(text)
-# sentences=[]
-# true_labels=[]
-# tokens=[]
-# for j in dataset:
-#     sentence=j["tokens"]
-#     tokens.append(j["tokens"])
-#     sentences.append(sentence)
-#     tags=[label_list[i] for i in j["ner_tags"]]
-#     true_labels.append(tags)
 
 predicted_labels=predict_labels_for_sentences(model, tokenizer, sentences)
 
-# print(f1_score(true_labels,predicted_labels))
 with open(args.out, 'w') as file:
     for sentence, label_list in zip(sentences, predicted_labels):
         for word, label in zip(sentence, label_list):
