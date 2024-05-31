@@ -72,13 +72,13 @@ def predict_labels_for_sentences(model, tokenizer, sentences):
     return predicted_true_labels_for_all_sents
 
 # # Use a pipeline as a high-level helper
-# pipe = pipeline("token-classification", model="Sankalp-Bahad/hindi-model")
+# pipe = pipeline("token-classification", model="Model_Name")
 
 # Load model directly
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 
-tokenizer = AutoTokenizer.from_pretrained("Sankalp-Bahad/Monolingual-Hindi-NER-Model")
-model = AutoModelForTokenClassification.from_pretrained("Sankalp-Bahad/Monolingual-Hindi-NER-Model")
+tokenizer = AutoTokenizer.from_pretrained("Model_Name")
+model = AutoModelForTokenClassification.from_pretrained("Model_Name")
 
 label_list = ['B-NEL','B-NEO','B-NEP','I-NEL','I-NEO','I-NEP','O','B-NETI','I-NETI','B-NEN','I-NEN','B-NEAR','I-NEAR']
 label_to_id = {label_list[i] : i for i in range(len(label_list))}
