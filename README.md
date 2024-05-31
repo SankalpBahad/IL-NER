@@ -4,11 +4,11 @@ This annotated corpora has been developed under the Bhashini project funded by M
 
 This dataset is licensed under Creative Commons Attribution 4.0 (CC-BY-4.0) license. The details of the dataset are given below. This dataset was developed by three partnering institutes, IIIT Hyderabad, CDAC Noida and IIIT Bhubaneshwar. 
 
-Language Train Test Dev
-Hindi 11076 1389 1389
-Urdu 8720 1096 1094
-Odia 12109 1519 1517
-Telugu 2993 384 384
+      Language      Train       Test       Dev
+      Hindi       11076 1389 1389
+      Urdu       8720 1096 1094
+      Odia       12109 1519 1517
+      Telugu       2993 384 384
 
 To use this dataset, cite the paper as
 
