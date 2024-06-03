@@ -1,13 +1,19 @@
+"""Predict tags for sentences using HuggingFace Indian Language NERs."""
+from argparse import ArgumentParser
 from datasets import Dataset
 import torch
 from transformers import pipeline
 from transformers import AutoTokenizer, AutoModelForTokenClassification
-from seqeval.metrics import classification_report, f1_score
-from argparse import ArgumentParser
-
-"""Tokenize sentences in Indic languages."""
 import re
 from string import punctuation
+
+
+model_name = "Sankalp-Bahad/Monolingual-Telugu-NER-Model"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForTokenClassification.from_pretrained(model_name)
+
+label_list = ['B-NEL','B-NEO','B-NEP','I-NEL','I-NEO','I-NEP','O','B-NETI','I-NETI','B-NEN','I-NEN','B-NEAR','I-NEAR']
+label_to_id = {label_list[i] : i for i in range(len(label_list))}
 
 
 token_specification = [
@@ -84,18 +90,10 @@ def tokenize(list_s):
     return tkns
 
 
-def tokenize_text_into_sentences_and_words(text, lang_type=0):
-    """Tokenize into """
-    # file_read = open(input_file, 'r', encoding='utf-8')
-    if lang_type == 0:
-        sentences = re.findall('.*?।|.*?\n', text + '\n', re.UNICODE)
-        end_markers = ['?', '।', '!', '|']
-    elif lang_type == 1:
-        sentences = re.findall('.*?|.*?\n', text + '\n', re.UNICODE)
-        end_markers = ['؟', '!', '|', '۔']
-    else:
-        sentences = re.findall('.*?|.*?\n', text + '\n', re.UNICODE)
-        end_markers = ['?', '.', '!', '|']
+def tokenize_text_into_sentences_and_words(text):
+    """Tokenize text into sentences and words"""
+    sentences = [text]
+    end_markers = ['?', '.', '!', '|', '؟', '!', '|', '۔', '।']
     proper_sentences = []
     for index, sentence in enumerate(sentences):
         sentence = sentence.strip()
@@ -125,11 +123,11 @@ def tokenize_text_into_sentences_and_words(text, lang_type=0):
     return proper_sentences
 
 def predict_labels_for_sentences(model, tokenizer, sentences):
+    """Predict labels for sentences through a loaded model and tokenizer."""
     predicted_true_labels_for_all_sents = []
     with torch.no_grad():
         for index, sentence in enumerate(sentences):
-            input_tensors = tokenizer(
-                sentence, is_split_into_words=True,truncation=True, return_tensors='pt', max_length=512)
+            input_tensors = tokenizer(sentence, truncation=True, return_tensors='pt', max_length=512)
             outputs = model(**input_tensors)
             logit_values = outputs.logits
             arg_max_torch = torch.argmax(logit_values, axis=-1)
@@ -149,32 +147,25 @@ def predict_labels_for_sentences(model, tokenizer, sentences):
             predicted_true_labels_for_all_sents.append(label_ids)
     return predicted_true_labels_for_all_sents
 
-# # Use a pipeline as a high-level helper
-# pipe = pipeline("token-classification", model="Model_Name")
 
-# Load model directly
-from transformers import AutoTokenizer, AutoModelForTokenClassification
+def main():
+    """Pass arguments and call functions here."""
+    parser = ArgumentParser()
+    parser.add_argument('--input', dest='inp', help='Enter the input file')
+    parser.add_argument('--output', dest='out', help='Enter the output file')
+    args = parser.parse_args()
+    file_name = args.inp
+    with open(file_name, "r") as inp_file:
+        text = inp_file.read()
+    sentences = tokenize_text_into_sentences_and_words(text)
+    predicted_labels = predict_labels_for_sentences(model, tokenizer, sentences)
 
-tokenizer = AutoTokenizer.from_pretrained("Model_Name")
-model = AutoModelForTokenClassification.from_pretrained("Model_Name")
+    with open(args.out, 'w') as file:
+        for sentence, label_list in zip(sentences, predicted_labels):
+            for word, label in zip(sentence.split(), label_list):
+                file.write(f"{word}\t{label}\n")
+            file.write("\n")
 
-label_list = ['B-NEL','B-NEO','B-NEP','I-NEL','I-NEO','I-NEP','O','B-NETI','I-NETI','B-NEN','I-NEN','B-NEAR','I-NEAR']
-label_to_id = {label_list[i] : i for i in range(len(label_list))}
 
-parser = ArgumentParser()
-parser.add_argument('--file', dest='file', help='Enter the test file')
-parser.add_argument('--output', dest='out', help='Enter the output file')
-args = parser.parse_args()
-print(args.file)
-file_name=args.file
-with open(file_name,"r") as inp_file:
-    text=inp_file.read()
-sentences = tokenize_text_into_sentences_and_words(text)
-
-predicted_labels=predict_labels_for_sentences(model, tokenizer, sentences)
-
-with open(args.out, 'w') as file:
-    for sentence, label_list in zip(sentences, predicted_labels):
-        for word, label in zip(sentence, label_list):
-            file.write(f"{word}\t{label}\n")
-        file.write("\n")
+if __name__ == '__main__':
+    main()
